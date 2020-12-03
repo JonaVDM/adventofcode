@@ -23,7 +23,6 @@ class MapSolver {
         let trees = 0;
 
         while (y < this.input.length - 1) {
-            // 3 right, 1 down
             x += right;
             y += down;
 

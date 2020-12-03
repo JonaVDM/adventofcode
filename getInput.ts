@@ -7,30 +7,42 @@ dotenv.config();
 
 const { YEAR, TOKEN } = process.env;
 const day = process.argv[2];
+const year = process.argv[3] || YEAR;
 
 main();
 
 async function main() {
+    if (!day) {
+        console.log('Did not get a day');
+        return;
+    }
+
     let data = await makeRequest();
     writeFile(data);
 }
 
 async function makeRequest() {
-    const url = `https://adventofcode.com/${YEAR}/day/${day}/input`;
-    const config: AxiosRequestConfig = {
-        headers: {
-            'Cookie': `session=${TOKEN}`
+    try {
+        const url = `https://adventofcode.com/${year}/day/${day}/input`;
+        const config: AxiosRequestConfig = {
+            headers: {
+                'Cookie': `session=${TOKEN}`
+            }
         }
-    }
-    let request = await axios.get(url, config);
+        let request = await axios.get(url, config);
 
-    return request.data;
+        return request.data;
+    } catch (e) {
+        console.log('Could not get data from aoc');
+        process.exit();
+    }
 }
 
 function writeFile(data: string) {
-    if (!fs.existsSync(path.join(__dirname, `day${day}`))) {
-        fs.mkdirSync(path.join(__dirname, `day${day}`));
+    const dir = path.join(__dirname, year, `day${day}`)
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
     }
 
-    fs.writeFileSync(path.join(__dirname, `day${day}`, 'input'), data);
+    fs.writeFileSync(path.join(dir, 'input'), data);
 }
