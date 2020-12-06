@@ -7,11 +7,28 @@ function getInput() {
     return file.toString().trim();
 }
 
+class Solver {
+    private input: string[];
+
+    constructor() {
+        this.input = getInput().split('\n');
+    }
+
+    part1() {
+        return 0;
+    }
+
+    part2() {
+        return 0;
+    }
+}
+
 (async () => {
     const t0 = performance.now();
-    const input = getInput().split('\n');
 
-    // Do stuff with input
+    const solver = new Solver();
+    console.log(`Part 1 ${solver.part1()}`);
+    console.log(`Part 2 ${solver.part2()}`);
 
     console.log(`Solved? in ${performance.now() - t0}ms`);
 })();
