@@ -3,7 +3,7 @@ import fs from 'fs';
 import { performance } from 'perf_hooks';
 
 function getInput() {
-    const file = fs.readFileSync(path.join(__dirname, 'input'));
+    const file = fs.readFileSync(path.join(__dirname, 'sample2'));
     return file.toString().trim();
 }
 
@@ -53,6 +53,43 @@ class Bag {
 
         return false;
     }
+
+    private tree(hook: string, pipe: string, text: string): string[] {
+        let lines = text.split('\n');
+        let popped = lines.shift();
+        let list = [`${hook} ${popped}`];
+        for (let i of lines) {
+            list.push(`${pipe} ${i}`);
+        }
+
+        return list;
+    }
+
+    toString() {
+        let str = this.color;
+
+        const popped = this.rules.pop();
+
+        for (const rule of this.rules) {
+            const bag = Solver.bags.find(bag => bag.color == rule.color);
+            str = [
+                str,
+                ...this.tree(' ├─ ', ' │ ', `${rule.amount} ${bag.toString()}`)
+            ].join('\n');
+        }
+
+        if (popped) {
+            this.rules.push(popped);
+
+            const bag = Solver.bags.find(bag => bag.color == popped.color);
+            str = [
+                str,
+                ...this.tree(' ╰─ ', '   ', `${popped.amount} ${bag.toString()}`)
+            ].join('\n');
+        }
+
+        return str;
+    }
 }
 
 class Solver {
@@ -80,12 +117,20 @@ class Solver {
     part2() {
         return this.myBag.containing();
     }
+
+    visualize() {
+        // Heavily inspired by
+        // https://github.com/salt-die/Advent-of-Code/blob/master/2020/visuals/trees_day_07.py
+        return this.myBag.toString();
+    }
 }
 
 (async () => {
     const t0 = performance.now();
 
     const solver = new Solver();
+    console.log(solver.visualize());
+
     console.log(`Part 1 ${solver.part1()}`);
     console.log(`Part 2 ${solver.part2()}`);
 
